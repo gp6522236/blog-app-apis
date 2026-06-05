@@ -16,12 +16,13 @@ public class UserDto {
 	@NotNull
 	private int id;
 	@NotBlank
-	@Size(min=5,message="User nam emust be min 5 character")
+	@Size(min=4,message="User must be min 5 character")
 	private String name;
 	@Email(message="Email address is not correct")
 	@NotBlank
 	private String email;
 	@NotBlank
+	@Size(min=3,max=10,message="Passoword must be min   of 3 and max is 10")
 	private String password;
 	@NotBlank
 	private String about;
