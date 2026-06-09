@@ -2,22 +2,25 @@ package com.codewithdurgesh.blog.services.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.codewithdurgesh.blog.entities.Category;
 import com.codewithdurgesh.blog.entities.Post;
 import com.codewithdurgesh.blog.entities.User;
 import com.codewithdurgesh.blog.exceptions.ResourceNotFoundException;
-import com.codewithdurgesh.blog.payloads.CategoryDto;
 import com.codewithdurgesh.blog.payloads.PostDto;
-import com.codewithdurgesh.blog.payloads.UserDto;
 import com.codewithdurgesh.blog.repository.CategoryRepo;
 import com.codewithdurgesh.blog.repository.PostRepo;
 import com.codewithdurgesh.blog.repository.UserRepo;
 import com.codewithdurgesh.blog.services.PostService;
+import org.springframework.data.domain.Pageable;
+
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -47,39 +50,65 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public Post updatePost(PostDto postDto, Integer postId) {
-		// TODO Auto-generated method stub
-		return null;
+	public PostDto updatePost(PostDto postDto, Integer postId) {
+		Post post=this.postRepo.findById(postId).orElseThrow(()-> new ResourceNotFoundException("Post","Post id",postId));
+		post.setTitle(postDto.getTitle());
+		post.setContent(postDto.getContent());
+		post.setImageName(postDto.getImageName());
+		post.setAddDate(postDto.getAddDate());
+		Post updatedPost=this.postRepo.save(post);
+           
+
+		return this.modelMapper.map(updatedPost, PostDto.class);
 	}
 
 	@Override
 	public void deletePost(Integer postId) {
-		// TODO Auto-generated method stub
+     Post post=this.postRepo.findById(postId).orElseThrow(()-> new ResourceNotFoundException("Post","Post id",postId));
+    this.postRepo.delete(post);
 		
 	}
 
 	@Override
-	public List<Post> getAllPost() {
+	public List<PostDto> getAllPost(Integer pageNumber,Integer pageSize) {
 		// TODO Auto-generated method stub
-		return null;
+//		we are taking dynamick
+//		 int pageSize=5;
+//		 int pageNumber=1;
+		 
+		 Pageable p=PageRequest.of(pageNumber, pageSize);
+		 
+		 Page<Post> pagePost=this.postRepo.findAll(p);
+		 List<Post>allPosts=pagePost.getContent();
+		
+		List<PostDto>postDtos=allPosts.stream().map((post)->this.modelMapper.map(post,PostDto.class)).collect(Collectors.toList());
+		return postDtos;	}
+
+	@Override
+	public PostDto getPostById(Integer postId) {
+		// TODO Auto-generated method stub
+		Post post=this.postRepo.findById(postId).orElseThrow(()->new ResourceNotFoundException("Post","Post id",postId));
+		return this.modelMapper.map(post,PostDto.class);
 	}
 
 	@Override
-	public Post getPostById(Integer postid) {
+	public List<PostDto> getPostByCategory(Integer categroyId) {
 		// TODO Auto-generated method stub
-		return null;
+		Category cat=this.categoryRepo.findById(categroyId).orElseThrow(()->new ResourceNotFoundException("Category","category id",categroyId));
+		List<Post>posts=this.postRepo.findByCategory(cat);
+		
+		List<PostDto>postDtos=posts.stream().map((post)->this.modelMapper.map(post,PostDto.class)).collect(Collectors.toList());
+		return postDtos;
 	}
 
 	@Override
-	public List<Post> getPostByCategory(Integer categroy) {
+	public List<PostDto> getPostsByUser(Integer userId) {
 		// TODO Auto-generated method stub
-		return null;
-	}
+		User user=this.userRepo.findById(userId).orElseThrow(()->new ResourceNotFoundException("User","userId",userId));
+		List<Post>posts=this.postRepo.findByUser(user);
+		List<PostDto>postDtos=posts.stream().map((post)->this.modelMapper.map(post,PostDto.class)).collect(Collectors.toList());
 
-	@Override
-	public List<Post> getPostsByUser(Integer userId) {
-		// TODO Auto-generated method stub
-		return null;
+		return postDtos;
 	}
 
 	@Override
