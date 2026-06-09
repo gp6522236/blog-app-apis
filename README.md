@@ -1,6 +1,6 @@
 # Blog App REST APIs
 
-A Spring Boot REST API project for managing a blogging platform. The application provides APIs for managing users, categories, and blog posts with proper validation, exception handling, and database integration.
+A Spring Boot REST API project for managing a blogging platform. The application provides APIs for managing users, categories, and blog posts with validation, exception handling, pagination, and MySQL database integration.
 
 ## Features
 
@@ -27,15 +27,18 @@ A Spring Boot REST API project for managing a blogging platform. The application
 * Delete Post
 * Get Post by ID
 * Get All Posts
+* Get Posts by User
+* Get Posts by Category
 
 ### Additional Features
 
 * DTO Mapping using ModelMapper
 * Global Exception Handling
-* Input Validation
+* Input Validation using Jakarta Validation
 * RESTful API Design
 * MySQL Database Integration
 * Spring Data JPA
+* Pagination Support
 
 ## Tech Stack
 
@@ -56,6 +59,32 @@ A Spring Boot REST API project for managing a blogging platform. The application
 * DTO Layer
 * Exception Handling Layer
 
+## API Examples
+
+### Get All Posts with Pagination
+
+```http
+GET /api/posts?pageNumber=0&pageSize=5
+```
+
+### Get Posts by User
+
+```http
+GET /api/user/{userId}/posts
+```
+
+### Get Posts by Category
+
+```http
+GET /api/category/{categoryId}/posts
+```
+
+### Create Post
+
+```http
+POST /api/user/{userId}/category/{categoryId}/posts
+```
+
 ## Run Locally
 
 ```bash
@@ -66,21 +95,36 @@ cd blog-app-apis
 mvn spring-boot:run
 ```
 
-## Database
+## Database Configuration
 
-Configure database credentials in:
+Configure your MySQL credentials in:
 
 ```properties
-application.properties
+src/main/resources/application.properties
+```
+
+Example:
+
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/blog_app_apis
+spring.datasource.username=root
+spring.datasource.password=your_password
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
 ```
 
 ## Future Enhancements
 
 * User Authentication & Authorization (Spring Security + JWT)
-* Pagination & Sorting
+* Sorting Support
 * Search APIs
 * Image Upload Support
 * API Documentation using Swagger/OpenAPI
+* Role-Based Access Control (RBAC)
 
-```
-```
+## Author
+
+Gaurav Patel
+
+GitHub: https://github.com/gp6522236
