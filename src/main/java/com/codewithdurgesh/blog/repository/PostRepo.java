@@ -11,6 +11,8 @@ public interface PostRepo extends JpaRepository<Post,Integer> {
 	//custom finder method
 	List<Post>findByUser(User user);
     List<Post>findByCategory(Category category);
+    
+    List<Post> findByTitleContaining(String title);
 
 }
 
